@@ -6,6 +6,7 @@ import Login from "../pages/student/Login"
 import Register from "../pages/student/Register"
 import Problems from "../pages/student/Problems"
 import Dashboard from "../pages/student/Dashboard"
+import TrainerDashboard from "../pages/trainer/TrainerDashboard"
 
 function AppRoutes() {
   return (
@@ -27,6 +28,15 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRoles={["STUDENT", "TRAINER"]}>
               <Problems />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/trainer/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["TRAINER"]}>
+              <TrainerDashboard />
             </ProtectedRoute>
           }
         />

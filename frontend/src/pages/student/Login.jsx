@@ -21,7 +21,7 @@ function Login() {
     try {
       const response = await loginUser(form)
       login(response.data)
-      navigate("/dashboard")
+      navigate(response.data.role === "TRAINER" ? "/trainer/dashboard" : "/dashboard")
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")
     } finally {

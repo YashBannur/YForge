@@ -19,9 +19,13 @@ function Navbar() {
         <Link to="/problems" className="hover:text-[var(--color-text-primary)]">Problems</Link>
         <Link to="/leaderboard" className="hover:text-[var(--color-text-primary)]">Leaderboard</Link>
 
-        {user ? (
+       {user ? (
           <>
-          <Link to="/dashboard" className="hover:text-[var(--color-text-primary)]">Dashboard</Link>
+            {user.role === "TRAINER" ? (
+              <Link to="/trainer/dashboard" className="hover:text-[var(--color-text-primary)]">Trainer Dashboard</Link>
+            ) : (
+              <Link to="/dashboard" className="hover:text-[var(--color-text-primary)]">Dashboard</Link>
+            )}
             <span className="text-[var(--color-text-primary)]">
               {user.username} <span className="text-xs text-[var(--color-forge-500)]">({user.role})</span>
             </span>

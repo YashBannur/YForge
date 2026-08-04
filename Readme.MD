@@ -51,3 +51,13 @@ feat(phase-5): student dashboard with real backend data
 - Build Dashboard page with reusable StatCard component
 - Handle nullable rank distinctly from 0 (no leaderboard yet)
 - Update navigation: login/register redirect to /dashboard, Navbar link added
+
+
+feat(phase-6): trainer dashboard with role-enforced access
+
+- Add TrainerDashboardResponse DTO, TrainerDashboardService, /api/trainer/dashboard
+- Add countByRole to UserRepository
+- Enforce TRAINER-only access via @PreAuthorize + @EnableMethodSecurity
+- Build TrainerDashboard page reusing StatCard component
+- Make Navbar and post-login redirect role-aware
+- Verify 403 for student JWT and frontend redirect for student navigating to trainer routes
