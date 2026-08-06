@@ -7,6 +7,8 @@ import Register from "../pages/student/Register"
 import Problems from "../pages/student/Problems"
 import Dashboard from "../pages/student/Dashboard"
 import TrainerDashboard from "../pages/trainer/TrainerDashboard"
+import TrainerProblems from "../pages/trainer/TrainerProblems"
+import ProblemForm from "../pages/trainer/ProblemForm"
 
 function AppRoutes() {
   return (
@@ -40,6 +42,33 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+
+        <Route
+          path="/trainer/problems"
+          element={
+            <ProtectedRoute allowedRoles={["TRAINER"]}>
+              <TrainerProblems />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+            path="/trainer/problems/new"
+            element={
+              <ProtectedRoute allowedRoles={["TRAINER"]}>
+                <ProblemForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trainer/problems/:id/edit"
+            element={
+              <ProtectedRoute allowedRoles={["TRAINER"]}>
+                <ProblemForm />
+              </ProtectedRoute>
+            }
+          />
       </Routes>
     </PageLayout>
   )

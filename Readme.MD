@@ -61,3 +61,19 @@ feat(phase-6): trainer dashboard with role-enforced access
 - Build TrainerDashboard page reusing StatCard component
 - Make Navbar and post-login redirect role-aware
 - Verify 403 for student JWT and frontend redirect for student navigating to trainer routes
+
+
+
+feat(phase-7): problem CRUD with trainer/student DTO separation
+
+Backend:
+- Add Problem and TestCase entities with cascade/orphan-removal
+- Add ProblemService/ProblemController with full CRUD
+- Enforce hidden-test-case boundary via separate DTOs, not runtime filtering
+- Fix Lombok/Jackson isHidden naming collision (renamed to hidden)
+
+Frontend:
+- Add trainer problem management: list, create, edit, delete
+- Build unified ProblemForm handling both create and edit modes
+- Add dynamic test case rows with hidden/visible toggle
+- Build student-facing problem list with DifficultyBadge, stable numbering
