@@ -1,7 +1,9 @@
 package com.yforge.backend.config;
 
+import com.yforge.backend.entity.Achievement;
 import com.yforge.backend.entity.Role;
 import com.yforge.backend.entity.User;
+import com.yforge.backend.repository.AchievementRepository;
 import com.yforge.backend.repository.RoleRepository;
 import com.yforge.backend.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -13,12 +15,18 @@ public class DataSeeder implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final AchievementRepository achievementRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataSeeder(RoleRepository roleRepository, UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+    public DataSeeder(
+            RoleRepository roleRepository,
+            UserRepository userRepository,
+            AchievementRepository achievementRepository,
+            PasswordEncoder passwordEncoder) {
+
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
+        this.achievementRepository = achievementRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -26,31 +34,45 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) {
         seedRole("STUDENT");
         seedRole("TRAINER");
-        seedTrainerAccount(); // manual trainer seeding, see method below
+
+        seedTrainerAccount();
+
+        seedAchievements();
     }
 
     private void seedRole(String name) {
         if (roleRepository.findByName(name).isEmpty()) {
-            Role role = Role.builder().name(name).build();
+
+            Role role = Role.builder()
+                    .name(name)
+                    .build();
+
             roleRepository.save(role);
+
             System.out.println("Seeded role: " + name);
         }
     }
 
-    /**
-     * Manually seed trainer accounts here. Add one line per trainer you want to create.
-     * Safe to leave in — it checks existsByUsername first, so it won't duplicate on restart.
-     */
     private void seedTrainerAccount() {
-        createTrainerIfNotExists("yash_trainer", "yash.trainer@yforge.com", "ChangeMe123!");
+        createTrainerIfNotExists(
+                "yash_trainer",
+                "yash.trainer@yforge.com",
+                "ChangeMe123!"
+        );
     }
 
-    private void createTrainerIfNotExists(String username, String email, String rawPassword) {
+    private void createTrainerIfNotExists(
+            String username,
+            String email,
+            String rawPassword) {
+
         if (userRepository.existsByUsername(username)) {
             return;
         }
+
         Role trainerRole = roleRepository.findByName("TRAINER")
-                .orElseThrow(() -> new IllegalStateException("TRAINER role not seeded"));
+                .orElseThrow(() ->
+                        new IllegalStateException("TRAINER role not seeded"));
 
         User trainer = User.builder()
                 .username(username)
@@ -60,6 +82,113 @@ public class DataSeeder implements CommandLineRunner {
                 .build();
 
         userRepository.save(trainer);
+
         System.out.println("Seeded trainer account: " + username);
+    }
+
+    private void seedAchievements() {
+
+        seedAchievement(
+                "FIRST_SOLUTION",
+                "First Solution",
+                "Solved your first problem",
+                "🔥"
+        );
+
+        seedAchievement(
+                "SOLVED_10",
+                "Getting Started",
+                "Solved 10 problems",
+                "🥉"
+        );
+
+        seedAchievement(
+                "SOLVED_50",
+                "Steel Sharpened",
+                "Solved 50 problems",
+                "🥈"
+        );
+
+        seedAchievement(
+                "SOLVED_100",
+                "Forge Master",
+                "Solved 100 problems",
+                "🥇"
+        );
+
+        seedAchievement(
+                "SOLVED_500",
+                "Legendary Forger",
+                "Solved 500 problems",
+                "💎"
+        );
+
+        seedAchievement(
+                "STREAK_3",
+                "Warming Up",
+                "3-day forge streak",
+                "🔥"
+        );
+
+        seedAchievement(
+                "STREAK_7",
+                "One Week Strong",
+                "7-day forge streak",
+                "🔥"
+        );
+
+        seedAchievement(
+                "STREAK_15",
+                "Half a Month",
+                "15-day forge streak",
+                "🔥"
+        );
+
+        seedAchievement(
+                "STREAK_30",
+                "One Month Strong",
+                "30-day forge streak",
+                "🔥"
+        );
+
+        seedAchievement(
+                "STREAK_50",
+                "Unstoppable",
+                "50-day forge streak",
+                "🔥"
+        );
+
+        seedAchievement(
+                "STREAK_100",
+                "Century Forger",
+                "100-day forge streak",
+                "🔥"
+        );
+
+        seedAchievement(
+                "DAILY_CHAMPION",
+                "Daily Challenge Champion",
+                "Solved a Daily Forge Challenge",
+                "🏆"
+        );
+    }
+
+    private void seedAchievement(
+            String code,
+            String name,
+            String description,
+            String icon) {
+
+        if (achievementRepository.findByCode(code).isEmpty()) {
+
+            achievementRepository.save(
+                    Achievement.builder()
+                            .code(code)
+                            .name(name)
+                            .description(description)
+                            .icon(icon)
+                            .build()
+            );
+        }
     }
 }

@@ -25,6 +25,7 @@ function Navbar() {
               <>
                 <Link to="/trainer/dashboard" className="hover:text-[var(--color-text-primary)]">Trainer Dashboard</Link>
                 <Link to="/trainer/problems" className="hover:text-[var(--color-text-primary)]">Manage Problems</Link>
+                <Link to="/trainer/analytics" className="hover:text-[var(--color-text-primary)]">Analytics</Link>
               </>
             ) : (
               <Link to="/dashboard" className="hover:text-[var(--color-text-primary)]">Dashboard</Link>

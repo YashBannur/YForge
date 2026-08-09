@@ -121,4 +121,44 @@ feat(phase-11): real progress tracking wired to submissions
 - Add countDistinctSolvedProblems to SubmissionRepository
 - Wire student dashboard problemsSolved/streak to real submission data
 - Add countTodaysSubmissions, countActiveStudents queries
-- Wire trainer dashboard to real problem/submission counts
+- Wire trainer dashboard to real problem/submission counts  
+
+
+feat(phase-12): computed leaderboard, no stored ranks
+
+- Add LeaderboardEntry DTO, LeaderboardService (rank by solved count, tie-break by streak)
+- Avoid N+1 via grouped query for solved counts per student
+- Wire real rank into student dashboard (was previously null)
+- Add /api/leaderboard endpoint and frontend Leaderboard page
+
+
+feat(phase-13): daily forge challenge
+
+- Add DailyChallenge entity (unique constraint per date), repository, DTOs
+- Add DailyChallengeService: get today's challenge + solved-today check, trainer set endpoint
+- Add GET /api/daily-challenge, PUT /api/trainer/daily-challenge
+- Wire DailyChallengeCard into student dashboard with Solve Now / Solved state
+
+
+
+feat(phase-14): count and streak-based achievements
+
+- Add Achievement, StudentAchievement entities and repositories
+- Seed achievement catalog (solve counts, streak milestones, daily champion)
+- Add AchievementService: idempotent award-checking after each PASSED submission
+- Wire into SubmissionService (streak update + achievement check on pass)
+- Add GET /api/student/achievements
+- Display achievements and daily challenge on student dashboard
+
+Deferred: code-pattern achievements (Loop Master, Recursion Warrior, etc.)
+require source analysis — separate future phase.
+
+
+feat(phase-15): trainer analytics dashboard
+
+- Add countSubmissionsByDay, countByDifficulty aggregation queries
+- Add AnalyticsResponse, DayCount, StudentActivity DTOs
+- Add AnalyticsService: 7-day submission trend, difficulty distribution, per-student activity
+- Add GET /api/trainer/analytics (TRAINER only)
+- Install recharts, build Analytics page (line chart, bar chart, activity table)
+- Wire /trainer/analytics route and nav link

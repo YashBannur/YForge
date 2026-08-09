@@ -31,4 +31,17 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     		    "SELECT s.student.id, COUNT(DISTINCT s.problem.id) FROM Submission s WHERE s.status = 'PASSED' GROUP BY s.student.id"
     		)
     		List<Object[]> countSolvedGroupedByStudent();
+    		
+    		
+    		// Submissions per day, last 7 days
+    		@org.springframework.data.jpa.repository.Query(
+    		    "SELECT FUNCTION('DATE', s.submittedAt), COUNT(s) FROM Submission s " +
+    		    "WHERE s.submittedAt >= :since GROUP BY FUNCTION('DATE', s.submittedAt) ORDER BY FUNCTION('DATE', s.submittedAt)"
+    		)
+    		List<Object[]> countSubmissionsByDay(@org.springframework.data.repository.query.Param("since") java.time.LocalDateTime since);
+    		
+    		
+    	boolean existsByStudent_UsernameAndProblem_IdAndStatusAndSubmittedAtAfter(
+    		        String username, Long problemId, com.yforge.backend.entity.Submission.Status status,
+    		        java.time.LocalDateTime after);
 }

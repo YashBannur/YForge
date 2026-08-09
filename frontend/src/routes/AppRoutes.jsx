@@ -10,6 +10,8 @@ import TrainerDashboard from "../pages/trainer/TrainerDashboard"
 import TrainerProblems from "../pages/trainer/TrainerProblems"
 import ProblemForm from "../pages/trainer/ProblemForm"
 import ProblemDetail from "../pages/student/ProblemDetail"
+import Leaderboard from "../pages/student/Leaderboard"
+import Analytics from "../pages/trainer/Analytics"
 
 function AppRoutes() {
   return (
@@ -79,6 +81,25 @@ function AppRoutes() {
               </ProtectedRoute>
             }
           />
+
+
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute allowedRoles={["STUDENT", "TRAINER"]}>
+                <Leaderboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+          path="/trainer/analytics"
+          element={
+            <ProtectedRoute allowedRoles={["TRAINER"]}>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </PageLayout>
   )
