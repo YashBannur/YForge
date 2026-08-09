@@ -1,5 +1,7 @@
 package com.yforge.backend.controller;
 
+import com.yforge.backend.dto.HintResponse;
+import com.yforge.backend.dto.ProblemDetailResponse;
 import com.yforge.backend.dto.ProblemRequest;
 import com.yforge.backend.dto.ProblemResponse;
 import com.yforge.backend.dto.ProblemSummaryResponse;
@@ -62,6 +64,16 @@ public class ProblemController {
     @GetMapping("/problems")
     public ResponseEntity<List<ProblemSummaryResponse>> getAllProblemsForStudent() {
         return ResponseEntity.ok(problemService.getAllProblemsForStudent());
+    }
+    
+    @GetMapping("/problems/{id}")
+    public ResponseEntity<ProblemDetailResponse> getProblemDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(problemService.getProblemDetailForStudent(id));
+    }
+
+    @GetMapping("/problems/{id}/hints/{hintNumber}")
+    public ResponseEntity<HintResponse> getHint(@PathVariable Long id, @PathVariable int hintNumber) {
+        return ResponseEntity.ok(problemService.getHint(id, hintNumber));
     }
 
     // ---------- helper ----------

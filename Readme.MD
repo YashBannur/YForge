@@ -77,3 +77,48 @@ Frontend:
 - Build unified ProblemForm handling both create and edit modes
 - Add dynamic test case rows with hidden/visible toggle
 - Build student-facing problem list with DifficultyBadge, stable numbering
+
+
+
+feat(phase-8): Monaco editor, problem detail page, copy-paste protection
+
+Backend:
+- Add ProblemDetailResponse, VisibleTestCaseResponse, HintResponse DTOs
+- Add getProblemDetailForStudent (visible test cases only, hints excluded)
+- Add getHint for progressive single-hint reveal
+- Add GET /api/problems/{id} and /api/problems/{id}/hints/{hintNumber}
+
+Frontend:
+- Install and configure @monaco-editor/react (Java syntax, dark theme)
+- Build ProblemDetail page: split layout (description + editor)
+- Add progressive Forge Hints reveal (one at a time, max 3)
+- Add ProtectedContent component: blocks copy/cut/select/context-menu with warning toast
+- Block editor paste/drag-drop via Monaco onDidPaste + undo, with warning toast
+- Wire /problems/:id route
+
+
+
+feat(phase-9-10): submission API and Java execution service
+
+Backend:
+- Add Submission entity/repository
+- Add ExecutionService: compile+run via javac/java with timeout guard
+- Add SubmissionService with separate run (visible-only, unsaved) and
+  submit (all tests, persisted) paths
+- Mask hidden test case details in TestCaseResult structurally
+- Fix submitted_at timezone mismatch (serverTimezone=Asia/Kolkata)
+
+Frontend:
+- Wire Run/Submit buttons to backend execution
+- Add results panel: pass/fail status, per-test breakdown, hidden test masking
+
+
+
+
+feat(phase-11): real progress tracking wired to submissions
+
+- Add lastSolvedDate to User, implement forge streak update logic
+- Add countDistinctSolvedProblems to SubmissionRepository
+- Wire student dashboard problemsSolved/streak to real submission data
+- Add countTodaysSubmissions, countActiveStudents queries
+- Wire trainer dashboard to real problem/submission counts

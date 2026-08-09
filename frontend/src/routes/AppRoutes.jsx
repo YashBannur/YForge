@@ -9,6 +9,7 @@ import Dashboard from "../pages/student/Dashboard"
 import TrainerDashboard from "../pages/trainer/TrainerDashboard"
 import TrainerProblems from "../pages/trainer/TrainerProblems"
 import ProblemForm from "../pages/trainer/ProblemForm"
+import ProblemDetail from "../pages/student/ProblemDetail"
 
 function AppRoutes() {
   return (
@@ -66,6 +67,15 @@ function AppRoutes() {
             element={
               <ProtectedRoute allowedRoles={["TRAINER"]}>
                 <ProblemForm />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/problems/:id"
+            element={
+              <ProtectedRoute allowedRoles={["STUDENT", "TRAINER"]}>
+                <ProblemDetail />
               </ProtectedRoute>
             }
           />

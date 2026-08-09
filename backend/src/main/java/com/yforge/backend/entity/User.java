@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class User {
+	
+	@Column(name = "last_solved_date")
+	private java.time.LocalDate lastSolvedDate;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

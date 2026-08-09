@@ -21,6 +21,58 @@ public class ProblemService {
         this.problemRepository = problemRepository;
         this.userRepository = userRepository;
     }
+    
+    
+    
+ // ---------- READ (student - detail view) ----------
+    public ProblemDetailResponse getProblemDetailForStudent(Long id) {
+        Problem problem = problemRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Problem not found"));
+
+        List<VisibleTestCaseResponse> visibleTestCases = problem.getTestCases().stream()
+                .filter(tc -> !tc.isHidden())
+                .sorted((a, b) -> {
+                    Integer aIdx = a.getOrderIndex() != null ? a.getOrderIndex() : 0;
+                    Integer bIdx = b.getOrderIndex() != null ? b.getOrderIndex() : 0;
+                    return aIdx.compareTo(bIdx);
+                })
+                .map(tc -> VisibleTestCaseResponse.builder()
+                        .input(tc.getInput())
+                        .expectedOutput(tc.getExpectedOutput())
+                        .build())
+                .collect(Collectors.toList());
+
+        return ProblemDetailResponse.builder()
+                .id(problem.getId())
+                .title(problem.getTitle())
+                .description(problem.getDescription())
+                .difficulty(problem.getDifficulty().name())
+                .topic(problem.getTopic())
+                .constraints(problem.getConstraints())
+                .starterCode(problem.getStarterCode())
+                .estimatedTimeMinutes(problem.getEstimatedTimeMinutes())
+                .visibleTestCases(visibleTestCases)
+                .build();
+    }
+
+    // ---------- READ (student - single hint, progressive reveal) ----------
+    public HintResponse getHint(Long problemId, int hintNumber) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new IllegalArgumentException("Problem not found"));
+
+        String hint = switch (hintNumber) {
+            case 1 -> problem.getHint1();
+            case 2 -> problem.getHint2();
+            case 3 -> problem.getHint3();
+            default -> throw new IllegalArgumentException("Invalid hint number: " + hintNumber);
+        };
+
+        if (hint == null || hint.isBlank()) {
+            throw new IllegalArgumentException("Hint " + hintNumber + " not available for this problem");
+        }
+
+        return HintResponse.builder().hintNumber(hintNumber).hint(hint).build();
+    }
 
     // ---------- CREATE ----------
     public ProblemResponse createProblem(ProblemRequest request, String creatorUsername) {
