@@ -11,7 +11,10 @@ import TrainerProblems from "../pages/trainer/TrainerProblems"
 import ProblemForm from "../pages/trainer/ProblemForm"
 import ProblemDetail from "../pages/student/ProblemDetail"
 import Leaderboard from "../pages/student/Leaderboard"
-import Analytics from "../pages/trainer/Analytics"
+// import Analytics from "../pages/trainer/Analytics"
+import Profile from "../pages/student/Profile"
+import Settings from "../pages/student/Settings"
+import Students from "../pages/trainer/Students"
 
 function AppRoutes() {
   return (
@@ -92,11 +95,24 @@ function AppRoutes() {
             }
           />
 
-          <Route
+          {/* <Route
           path="/trainer/analytics"
           element={
             <ProtectedRoute allowedRoles={["TRAINER"]}>
               <Analytics />
+            </ProtectedRoute>
+          }
+        /> */}
+
+
+        <Route path="/profile" element={<ProtectedRoute allowedRoles={["STUDENT", "TRAINER"]}><Profile /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute allowedRoles={["STUDENT", "TRAINER"]}><Settings /></ProtectedRoute>} />
+
+        <Route
+          path="/trainer/students"
+          element={
+            <ProtectedRoute allowedRoles={["TRAINER"]}>
+              <Students />
             </ProtectedRoute>
           }
         />

@@ -12,4 +12,5 @@ public class TestCaseResult {
     private String input;          // null if hidden
     private String expectedOutput; // null if hidden
     private String actualOutput;   // null if hidden
+    private String errorMessage;
 }

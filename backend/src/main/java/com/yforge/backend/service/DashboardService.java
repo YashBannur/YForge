@@ -1,13 +1,17 @@
 package com.yforge.backend.service;
 
 import com.yforge.backend.dto.AchievementResponse;
+import com.yforge.backend.dto.ActivityHeatmapResponse;
 import com.yforge.backend.dto.DashboardResponse;
+import com.yforge.backend.dto.DayCount;
 import com.yforge.backend.entity.User;
 import com.yforge.backend.repository.UserRepository;
 import com.yforge.backend.repository.SubmissionRepository;
 import com.yforge.backend.repository.StudentAchievementRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -49,6 +53,25 @@ public class DashboardService {
                 .forgeStreakLongest(user.getForgeStreakLongest())
                 .rank(leaderboardService.getRankForUser(username))
                 .build();
+    }
+    
+    
+    public ActivityHeatmapResponse getActivityHeatmap(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        java.time.LocalDate startDate = java.time.LocalDate.now().minusDays(90);
+        Map<String, Long> countsByDate = submissionRepository
+                .countSubmissionsByDayForStudent(user, startDate.atStartOfDay()).stream()
+                .collect(Collectors.toMap(row -> row[0].toString(), row -> (Long) row[1]));
+
+        List<DayCount> days = new ArrayList<>();
+        for (int i = 90; i >= 0; i--) {
+            String date = java.time.LocalDate.now().minusDays(i).toString();
+            days.add(DayCount.builder().date(date).count(countsByDate.getOrDefault(date, 0L)).build());
+        }
+
+        return ActivityHeatmapResponse.builder().days(days).build();
     }
 
     public List<AchievementResponse> getAchievements(String username) {

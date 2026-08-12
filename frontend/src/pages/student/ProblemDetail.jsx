@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import Editor from "@monaco-editor/react"
-import { getProblemDetail, getHint, runCode, submitCode } from "../../api/problemApi"
+import { getProblemDetail, getHint, runCode, submitCode, getMyLastCode } from "../../api/problemApi"
 import DifficultyBadge from "../../components/common/DifficultyBadge"
 import ProtectedContent from "../../components/common/ProtectedContent"
+import { loader } from "@monaco-editor/react"
 
 function ProblemDetail() {
   const { id } = useParams()
@@ -17,16 +18,17 @@ function ProblemDetail() {
   const [running, setRunning] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null)
+  const [editorTheme, setEditorTheme] = useState(localStorage.getItem("yforge_editor_theme") || "vs-dark")
 
   useEffect(() => {
-    getProblemDetail(id)
-      .then((res) => {
-        setProblem(res.data)
-        setCode(res.data.starterCode || "")
-      })
-      .catch((err) => setError(err.response?.data?.message || "Failed to load problem"))
-      .finally(() => setLoading(false))
-  }, [id])
+  Promise.all([getProblemDetail(id), getMyLastCode(id).catch(() => ({ data: {} }))])
+    .then(([problemRes, codeRes]) => {
+      setProblem(problemRes.data)
+      setCode(codeRes.data.code || problemRes.data.starterCode || "")
+    })
+    .catch((err) => setError(err.response?.data?.message || "Failed to load problem"))
+    .finally(() => setLoading(false))
+}, [id])
 
   const handleRevealHint = async (hintNumber) => {
     setHintError("")
@@ -37,6 +39,12 @@ function ProblemDetail() {
       setHintError(err.response?.data?.message || "Hint not available")
     }
   }
+
+
+  const handleThemeChange = (theme) => {
+  setEditorTheme(theme)
+  localStorage.setItem("yforge_editor_theme", theme)
+}
 
   const handleRun = async () => {
     setRunning(true)
@@ -63,6 +71,11 @@ function ProblemDetail() {
       setSubmitting(false)
     }
   }
+
+  const handleReset = () => {
+  if (!window.confirm("Reset to starter code? Your current changes will be lost.")) return
+  setCode(problem.starterCode || "")
+}
 
   if (loading) return <p className="text-[var(--color-text-secondary)]">Loading problem...</p>
   if (error) return <p className="text-[var(--color-danger)]">{error}</p>
@@ -128,8 +141,25 @@ function ProblemDetail() {
       {/* Right: editor panel */}
       <div className="flex flex-col bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-lg overflow-hidden">
         <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)]">
-          <span className="text-sm text-[var(--color-text-secondary)]">Java</span>
+           <span className="text-sm text-[var(--color-text-secondary)]">Java</span>
+            <select
+              value={editorTheme}
+              onChange={(e) => handleThemeChange(e.target.value)}
+              className="text-xs bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded px-2 py-1 text-[var(--color-text-secondary)]"
+            >
+              <option value="vs-dark">Dark</option>
+              <option value="vs">Light</option>
+              <option value="hc-black">High Contrast</option>
+            </select>
           <div className="flex gap-2">
+            <button
+              onClick={handleReset}
+              disabled={running || submitting}
+              className="text-sm bg-[var(--color-bg-tertiary)] px-3 py-1 rounded hover:opacity-80 disabled:opacity-50"
+              title="Reset to starter code"
+            >
+              Reset
+            </button>
             <button
               onClick={handleRun}
               disabled={running || submitting}
@@ -153,26 +183,108 @@ function ProblemDetail() {
           </div>
         )}
 
-        <div className="flex-1">
+        <div className="flex-1 min-h-0">
           <Editor
             height="100%"
             language="java"
-            theme="vs-dark"
+            theme={editorTheme}
             value={code}
             onChange={(value) => setCode(value ?? "")}
-            onMount={(editor) => {
+            onMount={(editor, monaco) => {
               editor.onDidPaste(() => {
                 editor.trigger("source", "undo")
                 setShowPasteWarning(true)
                 setTimeout(() => setShowPasteWarning(false), 3000)
               })
+
+              monaco.languages.registerCompletionItemProvider("java", {
+                provideCompletionItems: (model, position) => {
+                  const word = model.getWordUntilPosition(position)
+                  const range = {
+                    startLineNumber: position.lineNumber,
+                    endLineNumber: position.lineNumber,
+                    startColumn: word.startColumn,
+                    endColumn: word.endColumn,
+                  }
+
+                  const snippets = [
+                    {
+                      label: "sout",
+                      insertText: "System.out.println($1);",
+                      detail: "Print line",
+                    },
+                    {
+                      label: "for",
+                      insertText: "for (int ${1:i} = 0; ${1:i} < ${2:n}; ${1:i}++) {\n\t$0\n}",
+                      detail: "For loop",
+                    },
+                    {
+                      label: "forEach",
+                      insertText: "for (${1:int} ${2:item} : ${3:collection}) {\n\t$0\n}",
+                      detail: "For-each loop",
+                    },
+                    {
+                      label: "while",
+                      insertText: "while (${1:condition}) {\n\t$0\n}",
+                      detail: "While loop",
+                    },
+                    {
+                      label: "if",
+                      insertText: "if (${1:condition}) {\n\t$0\n}",
+                      detail: "If statement",
+                    },
+                    {
+                      label: "ifelse",
+                      insertText: "if (${1:condition}) {\n\t$2\n} else {\n\t$0\n}",
+                      detail: "If-else statement",
+                    },
+                    {
+                      label: "main",
+                      insertText: "public static void main(String[] args) {\n\t$0\n}",
+                      detail: "Main method",
+                    },
+                    {
+                      label: "scanner",
+                      insertText: "Scanner sc = new Scanner(System.in);",
+                      detail: "Create Scanner",
+                    },
+                    {
+                      label: "arraylist",
+                      insertText: "ArrayList<${1:Integer}> ${2:list} = new ArrayList<>();",
+                      detail: "ArrayList declaration",
+                    },
+                    {
+                      label: "hashmap",
+                      insertText: "HashMap<${1:String}, ${2:Integer}> ${3:map} = new HashMap<>();",
+                      detail: "HashMap declaration",
+                    },
+                    {
+                      label: "trycatch",
+                      insertText: "try {\n\t$1\n} catch (${2:Exception} e) {\n\t$0\n}",
+                      detail: "Try-catch block",
+                    },
+                  ]
+
+                  return {
+                    suggestions: snippets.map((s) => ({
+                      label: s.label,
+                      kind: monaco.languages.CompletionItemKind.Snippet,
+                      insertText: s.insertText,
+                      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                      detail: s.detail,
+                      range,
+                    })),
+                  }
+                },
+              })
             }}
             options={{
-              fontSize: 14,
-              minimap: { enabled: false },
-              dropIntoEditor: { enabled: false },
-              contextmenu: false,
-            }}
+            fontSize: Number(localStorage.getItem("yforge_editor_fontsize")) || 14,
+            minimap: { enabled: false },
+            dropIntoEditor: { enabled: false },
+            contextmenu: false,
+            automaticLayout: true,
+          }}
           />
         </div>
 
@@ -203,7 +315,8 @@ function ProblemDetail() {
                     {!tr.hidden && !tr.passed && (
                       <div className="mt-1 text-xs text-[var(--color-text-secondary)]">
                         <p>Expected: {tr.expectedOutput}</p>
-                        <p>Got: {tr.actualOutput}</p>
+                        <p>Got: {tr.actualOutput || "(no output)"}</p>
+                        {tr.errorMessage && <p className="text-[var(--color-danger)]">{tr.errorMessage}</p>}
                       </div>
                     )}
                   </div>

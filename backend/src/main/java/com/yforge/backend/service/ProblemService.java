@@ -2,25 +2,30 @@ package com.yforge.backend.service;
 
 import com.yforge.backend.dto.*;
 import com.yforge.backend.entity.Problem;
+import com.yforge.backend.entity.Submission;
 import com.yforge.backend.entity.TestCase;
 import com.yforge.backend.entity.User;
 import com.yforge.backend.repository.ProblemRepository;
 import com.yforge.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.yforge.backend.repository.SubmissionRepository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ProblemService {
 
-    private final ProblemRepository problemRepository;
-    private final UserRepository userRepository;
+	private final ProblemRepository problemRepository;
+	private final UserRepository userRepository;
+	private final SubmissionRepository submissionRepository;
 
-    public ProblemService(ProblemRepository problemRepository, UserRepository userRepository) {
-        this.problemRepository = problemRepository;
-        this.userRepository = userRepository;
-    }
+	public ProblemService(ProblemRepository problemRepository,UserRepository userRepository,SubmissionRepository submissionRepository) {
+	    this.problemRepository = problemRepository;
+	    this.userRepository = userRepository;
+	    this.submissionRepository = submissionRepository;
+	}
     
     
     
@@ -125,7 +130,15 @@ public class ProblemService {
     }
 
     // ---------- READ (student - summary list) ----------
-    public List<ProblemSummaryResponse> getAllProblemsForStudent() {
+    public List<ProblemSummaryResponse> getAllProblemsForStudent(String username) {
+        User student = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Set<Long> solvedProblemIds = submissionRepository.findByStudentAndStatus(student, Submission.Status.PASSED)
+                .stream()
+                .map(s -> s.getProblem().getId())
+                .collect(Collectors.toSet());
+
         return problemRepository.findAll().stream()
                 .map(p -> ProblemSummaryResponse.builder()
                         .id(p.getId())
@@ -133,6 +146,7 @@ public class ProblemService {
                         .difficulty(p.getDifficulty().name())
                         .topic(p.getTopic())
                         .estimatedTimeMinutes(p.getEstimatedTimeMinutes())
+                        .solved(solvedProblemIds.contains(p.getId()))
                         .build())
                 .collect(Collectors.toList());
     }

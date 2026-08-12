@@ -200,22 +200,16 @@ public class SubmissionService {
             boolean hide =
                     maskHidden && tc.isHidden();
 
-            results.add(
-                    TestCaseResult.builder()
-                            .testNumber(i + 1)
-                            .hidden(tc.isHidden())
-                            .passed(result.passed())
-                            .input(hide ? null : tc.getInput())
-                            .expectedOutput(
-                                    hide ? null :
-                                            tc.getExpectedOutput()
-                            )
-                            .actualOutput(
-                                    hide ? null :
-                                            result.actualOutput()
-                            )
-                            .build()
-            );
+            results.add(TestCaseResult.builder()
+                    .testNumber(i + 1)
+                    .hidden(tc.isHidden())
+                    .passed(result.passed())
+                    .input(hide ? null : tc.getInput())
+                    .expectedOutput(hide ? null : tc.getExpectedOutput())
+                    .actualOutput(hide ? null : result.actualOutput())
+                    .errorMessage(hide ? null : result.errorMessage())
+                    .build());
+          
         }
 
         String status =

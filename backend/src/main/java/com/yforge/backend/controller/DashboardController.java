@@ -3,6 +3,7 @@ package com.yforge.backend.controller;
 
 
 import com.yforge.backend.dto.AchievementResponse;
+import com.yforge.backend.dto.ActivityHeatmapResponse;
 import com.yforge.backend.dto.DashboardResponse;
 import com.yforge.backend.service.DashboardService;
 
@@ -35,5 +36,13 @@ public class DashboardController {
     public List<AchievementResponse> getMyAchievements() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return dashboardService.getAchievements(username);
+    }
+    
+    
+    
+    @GetMapping("/activity")
+    public ActivityHeatmapResponse getActivity() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dashboardService.getActivityHeatmap(username);
     }
 }

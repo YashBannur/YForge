@@ -13,4 +13,5 @@ public class ProblemSummaryResponse {
     private String difficulty;
     private String topic;
     private Integer estimatedTimeMinutes;
+    private boolean solved;
 }

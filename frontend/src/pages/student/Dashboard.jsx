@@ -5,6 +5,7 @@ import { getTodaysChallenge } from "../../api/dailyChallengeApi"
 import { getAchievements } from "../../api/achievementApi"
 import StatCard from "../../components/common/StatCard"
 
+
 function DailyChallengeCard() {
   const [challenge, setChallenge] = useState(null)
   const [loaded, setLoaded] = useState(false)
