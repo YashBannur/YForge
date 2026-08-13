@@ -2,11 +2,13 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { getTrainerProblems, deleteProblem } from "../../api/problemApi"
 import DifficultyBadge from "../../components/common/DifficultyBadge"
+import { useToast } from "../../context/ToastContext"
 
 function TrainerProblems() {
   const [problems, setProblems] = useState([])
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(true)
+  const { showToast } = useToast()
 
   const loadProblems = () => {
     setLoading(true)
@@ -23,10 +25,11 @@ function TrainerProblems() {
   const handleDelete = async (id, title) => {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return
     try {
-      await deleteProblem(id)
-      setProblems((prev) => prev.filter((p) => p.id !== id))
+     await deleteProblem(id)
+     setProblems((prev) => prev.filter((p) => p.id !== id))
+     showToast(`"${title}" deleted.`, "success")
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete problem")
+      showToast(err.response?.data?.message || "Failed to delete problem", "error")
     }
   }
 

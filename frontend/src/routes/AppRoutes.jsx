@@ -15,6 +15,7 @@ import Leaderboard from "../pages/student/Leaderboard"
 import Profile from "../pages/student/Profile"
 import Settings from "../pages/student/Settings"
 import Students from "../pages/trainer/Students"
+import Achievements from "../pages/student/Achievements"
 
 function AppRoutes() {
   return (
@@ -113,6 +114,15 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRoles={["TRAINER"]}>
               <Students />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/achievements"
+          element={
+            <ProtectedRoute allowedRoles={["STUDENT", "TRAINER"]}>
+              <Achievements />
             </ProtectedRoute>
           }
         />

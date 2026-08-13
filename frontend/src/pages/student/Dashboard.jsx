@@ -62,27 +62,107 @@ function AchievementsCard() {
   if (!loaded) return null
 
   return (
-    <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-lg p-5 mt-6">
-      <h2 className="text-lg font-semibold mb-3">Achievements 🏆</h2>
-      {achievements.length === 0 ? (
-        <p className="text-[var(--color-text-secondary)] text-sm">No achievements yet. Solve a problem to earn one!</p>
-      ) : (
-        <div className="flex flex-wrap gap-3">
-          {achievements.map((a) => (
-            <div
-              key={a.code}
-              title={a.description}
-              className="flex items-center gap-2 bg-[var(--color-bg-tertiary)] rounded-lg px-3 py-2 text-sm"
-            >
-              <span className="text-lg">{a.icon}</span>
-              <span>{a.name}</span>
-            </div>
-          ))}
-        </div>
-      )}
+   <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-xl p-5 mt-6 shadow-sm">
+  {/* Header */}
+  <div className="flex items-center justify-between mb-5">
+    <div>
+      <h2 className="text-lg font-semibold flex items-center gap-2">
+        Achievements
+        <span className="text-lg">🏆</span>
+      </h2>
+      <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+        Milestones you've unlocked
+      </p>
     </div>
-  )
-}
+
+    <Link
+            to="/achievements"
+            className="
+              inline-flex items-center gap-1.5
+              px-3 py-1.5
+              rounded-lg
+              text-xs font-semibold
+              text-[var(--color-forge-500)]
+              bg-[var(--color-forge-500)]/10
+              border border-[var(--color-forge-500)]/20
+              hover:bg-[var(--color-forge-500)]/20
+              hover:border-[var(--color-forge-500)]/40
+              hover:shadow-sm
+              transition-all duration-200
+              group
+            "
+          >
+            View all
+            <span className="transition-transform duration-200 group-hover:translate-x-0.5">
+              →
+            </span>
+          </Link>
+            </div>
+
+            {/* Achievements */}
+            {achievements.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="text-4xl mb-3 opacity-80">🏆</div>
+
+                <p className="text-sm font-medium">
+                  No achievements yet
+                </p>
+
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                  Solve a problem to start earning achievements!
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {achievements.map((a) => (
+                  <div
+                    key={a.code}
+                    title={a.description}
+                    className="
+                      group
+                      flex items-center gap-3
+                      bg-[var(--color-bg-tertiary)]
+                      border border-[var(--color-border)]
+                      rounded-lg
+                      px-4 py-3
+                      transition-all duration-200
+                      hover:-translate-y-0.5
+                      hover:shadow-md
+                    "
+                  >
+                    {/* Icon */}
+                    <div
+                      className="
+                        w-10 h-10
+                        flex items-center justify-center
+                        rounded-lg
+                        bg-[var(--color-bg-secondary)]
+                        text-xl
+                        shrink-0
+                        transition-transform duration-200
+                        group-hover:scale-110
+                      "
+                    >
+                      {a.icon}
+                    </div>
+
+                    {/* Text */}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {a.name}
+                      </p>
+
+                      <p className="text-xs text-[var(--color-text-secondary)] truncate">
+                        {a.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+            )
+          }
 
 function Dashboard() {
   const [data, setData] = useState(null)
