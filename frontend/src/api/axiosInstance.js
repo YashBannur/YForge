@@ -1,10 +1,9 @@
 import axios from "axios"
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
 })
 
-// Attach JWT to every outgoing request automatically
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("yforge_token")
   if (token) {
