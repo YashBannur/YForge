@@ -45,7 +45,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
         	    "http://localhost:5173",
-        	    "https://y-forge-inky.vercel.app"
+        	    "https://y-forge-inky.vercel.app",
+        	    "https://y-forge-git-main-yashbannurs-projects.vercel.app"
         	));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
