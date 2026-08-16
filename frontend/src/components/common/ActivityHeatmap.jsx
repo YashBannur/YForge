@@ -24,7 +24,7 @@ function getColor(count) {
   return "#4ade80"
 }
 
-function ActivityHeatmap() {
+function ActivityHeatmap({ fetchFn }) {
   // Current year
   const year = new Date().getFullYear()
 
@@ -34,14 +34,15 @@ function ActivityHeatmap() {
   // ================= FETCH ACTIVITY =================
 
   useEffect(() => {
-    getActivity()
+    const fetcher = fetchFn || getActivity
+    fetcher()
       .then((res) => {
         setDays(res.data.days || [])
       })
       .catch(() => {
         setDays([])
       })
-  }, [])
+  }, [fetchFn])
 
   // ================= ACTIVITY MAP =================
 

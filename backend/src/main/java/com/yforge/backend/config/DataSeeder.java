@@ -6,6 +6,7 @@ import com.yforge.backend.entity.User;
 import com.yforge.backend.repository.AchievementRepository;
 import com.yforge.backend.repository.RoleRepository;
 import com.yforge.backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,9 @@ public class DataSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final AchievementRepository achievementRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${trainer.seed.password}")
+    private String trainerSeedPassword;
 
     public DataSeeder(
             RoleRepository roleRepository,
@@ -57,7 +61,7 @@ public class DataSeeder implements CommandLineRunner {
         createTrainerIfNotExists(
                 "yash_trainer",
                 "yash.trainer@yforge.com",
-                "ChangeMe123!"
+                trainerSeedPassword
         );
     }
 

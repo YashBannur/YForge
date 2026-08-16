@@ -310,7 +310,7 @@ function ProblemDetail() {
                 {result.testResults?.map((tr) => (
                   <div key={tr.testNumber} className="mb-2 text-sm p-2 rounded bg-[var(--color-bg-tertiary)]">
                     <span className={tr.passed ? "text-[var(--color-success)]" : "text-[var(--color-danger)]"}>
-                      {tr.passed ? "✓" : "✗"} Test {tr.testNumber} {tr.hidden ? "(hidden)" : ""}
+                      {tr.passed ? "✓" : "✗"} Test {tr.testNumber} {tr.hidden ? "🔒" : ""}
                     </span>
                     {!tr.hidden && !tr.passed && (
                       <div className="mt-1 text-xs text-[var(--color-text-secondary)]">

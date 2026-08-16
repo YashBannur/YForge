@@ -10,7 +10,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     List<Submission> findByStudentOrderBySubmittedAtDesc(User student);
     long countByStudent(User student);
     long countByProblemId(Long problemId);
-    long countByStudentAndStatus(User student, Submission.Status status);
     @org.springframework.data.jpa.repository.Query(
     	    "SELECT COUNT(DISTINCT s.problem.id) FROM Submission s WHERE s.student = :student AND s.status = 'PASSED'"
     	)
@@ -59,4 +58,20 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     	Optional<Submission> findFirstByStudentAndProblemIdOrderBySubmittedAtDesc(User student, Long problemId);
     	
     	List<Submission> findByStudentAndStatus(User student, Submission.Status status);
+    	
+    	
+    	long countByStatus(Submission.Status status);
+
+    	long countByStatusAndSubmittedAtAfter(Submission.Status status, java.time.LocalDateTime after);
+
+    	List<Submission> findTop10ByOrderBySubmittedAtDesc();
+
+    	@org.springframework.data.jpa.repository.Query(
+    	    "SELECT s.problem.title, COUNT(s), SUM(CASE WHEN s.status = 'PASSED' THEN 1 ELSE 0 END) " +
+    	    "FROM Submission s GROUP BY s.problem.id, s.problem.title"
+    	)
+    	List<Object[]> getAttemptsAndPassesByProblem();
+    	
+    	List<Submission> findTop15ByStudentOrderBySubmittedAtDesc(User student);
+    	long countByStudentAndStatus(User student, Submission.Status status);
 }

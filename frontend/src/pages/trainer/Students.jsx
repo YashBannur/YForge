@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { getAllStudents } from "../../api/trainerStudentApi"
 
 function Students() {
+  const navigate = useNavigate()
   const [students, setStudents] = useState([])
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(true)
@@ -52,7 +54,11 @@ function Students() {
           </thead>
           <tbody>
             {filtered.map((s) => (
-              <tr key={s.username} className="border-b border-[var(--color-border)] hover:bg-[var(--color-bg-tertiary)]">
+              <tr
+                key={s.username}
+                onClick={() => navigate(`/trainer/students/${s.username}`)}
+                className="border-b border-[var(--color-border)] hover:bg-[var(--color-bg-tertiary)] cursor-pointer"
+              >
                 <td className="p-3 font-medium">{s.username}</td>
                 <td className="p-3 text-[var(--color-text-secondary)]">{s.email}</td>
                 <td className="p-3">{s.problemsSolved}</td>

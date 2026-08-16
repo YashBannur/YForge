@@ -1,314 +1,146 @@
 import { useState, useEffect } from "react"
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-} from "recharts"
+import { Link } from "react-router-dom"
+import { getTrainerDashboard, getRecentSubmissions, getProblemPerformance } from "../../api/trainerApi"
 
-import { getTrainerDashboard } from "../../api/trainerApi"
-import { getAnalytics } from "../../api/analyticsApi"
-import StatCard from "../../components/common/StatCard"
+function Panel({ title, children, className = "" }) {
+  return (
+    <div className={`border border-[#2a2f3a] rounded-lg p-4 font-mono ${className}`}>
+      <p className="text-[#7ee6d8] text-sm mb-3">{title}</p>
+      {children}
+    </div>
+  )
+}
+
+function StatBox({ label, value }) {
+  return (
+    <div className="border border-[#2a2f3a] rounded-lg p-4 font-mono flex-1">
+      <p className="text-[#7ee6d8] text-xs mb-1">{label}</p>
+      <p className="text-white text-2xl">{value}</p>
+    </div>
+  )
+}
 
 function TrainerDashboard() {
   const [data, setData] = useState(null)
-  const [analyticsData, setAnalyticsData] = useState(null)
-
+  const [recent, setRecent] = useState([])
+  const [performance, setPerformance] = useState([])
   const [error, setError] = useState("")
-  const [analyticsError, setAnalyticsError] = useState("")
-
   const [loading, setLoading] = useState(true)
-  const [analyticsLoading, setAnalyticsLoading] = useState(true)
 
   useEffect(() => {
-    getTrainerDashboard()
-      .then((res) => setData(res.data))
-      .catch((err) =>
-        setError(
-          err.response?.data?.message || "Failed to load dashboard"
-        )
-      )
+    Promise.all([getTrainerDashboard(), getRecentSubmissions(), getProblemPerformance()])
+      .then(([dashRes, recentRes, perfRes]) => {
+        setData(dashRes.data)
+        setRecent(recentRes.data)
+        setPerformance(perfRes.data)
+      })
+      .catch((err) => setError(err.response?.data?.message || "Failed to load dashboard"))
       .finally(() => setLoading(false))
-
-    getAnalytics()
-      .then((res) => setAnalyticsData(res.data))
-      .catch((err) =>
-        setAnalyticsError(
-          err.response?.data?.message || "Failed to load analytics"
-        )
-      )
-      .finally(() => setAnalyticsLoading(false))
   }, [])
 
-  if (loading) {
-    return (
-      <p className="text-[var(--color-text-secondary)]">
-        Loading dashboard...
-      </p>
-    )
-  }
-
-  if (error) {
-    return (
-      <p className="text-[var(--color-danger)]">
-        {error}
-      </p>
-    )
-  }
-
-  const difficultyData = analyticsData
-    ? Object.entries(analyticsData.difficultyDistribution).map(
-        ([name, count]) => ({
-          name,
-          count,
-        })
-      )
-    : []
+  if (loading) return <p className="text-[var(--color-text-secondary)] font-mono">Loading dashboard...</p>
+  if (error) return <p className="text-[var(--color-danger)] font-mono">{error}</p>
 
   return (
-    <div>
-      {/* ==================== TRAINER DASHBOARD ==================== */}
+    <div className="bg-black rounded-xl p-6 -m-6 min-h-[calc(100vh-80px)]">
+      <p className="text-white font-mono text-sm mb-6">Trainer Dashboard</p>
 
-      <h1 className="text-2xl font-bold mb-1">
-        Trainer Dashboard
-      </h1>
-
-      <p className="text-[var(--color-text-secondary)] mb-6">
-        Welcome, {data.username}
-      </p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard
-          label="Total Students"
-          value={data.totalStudents}
-          accent
-        />
-
-        <StatCard
-          label="Active Students"
-          value={data.activeStudents}
-        />
-
-        <StatCard
-          label="Problems"
-          value={data.totalProblems}
-        />
-
-        <StatCard
-          label="Today's Submissions"
-          value={data.todaysSubmissions}
-        />
+      {/* Top stat row */}
+      <div className="flex gap-4 mb-6">
+        <StatBox label="Problems" value={data.totalProblems} />
+        <StatBox label="Students" value={data.totalStudents} />
+        <StatBox label="Submissions" value={data.totalSubmissions} />
+        <StatBox label="Success" value={`${data.successRate}%`} />
       </div>
 
-      {/* ==================== ANALYTICS ==================== */}
-
-      <h1 className="text-2xl font-bold mb-6 mt-8">
-        Analytics
-      </h1>
-
-      {analyticsLoading ? (
-        <p className="text-[var(--color-text-secondary)]">
-          Loading analytics...
-        </p>
-      ) : analyticsError ? (
-        <p className="text-[var(--color-danger)]">
-          {analyticsError}
-        </p>
-      ) : (
-        <>
-          {/* Charts */}
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-
-            {/* Submission Trend */}
-
-            <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-lg p-5">
-
-              <h2 className="text-lg font-semibold mb-4">
-                Submission Trend (7 days)
-              </h2>
-
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={analyticsData.submissionTrend}>
-
-                  <CartesianGrid
-                    stroke="var(--color-border)"
-                    strokeDasharray="3 3"
-                  />
-
-                  <XAxis
-                    dataKey="date"
-                    stroke="var(--color-text-secondary)"
-                    fontSize={12}
-                  />
-
-                  <YAxis
-                    stroke="var(--color-text-secondary)"
-                    fontSize={12}
-                    allowDecimals={false}
-                  />
-
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor:
-                        "var(--color-bg-tertiary)",
-                      border: "none",
-                    }}
-                  />
-
-                  <Line
-                    type="monotone"
-                    dataKey="count"
-                    stroke="var(--color-forge-500)"
-                    strokeWidth={2}
-                  />
-
-                </LineChart>
-              </ResponsiveContainer>
-
+      {/* Student Activity + Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <Panel title="Student Activity">
+          <div className="flex flex-col gap-2 text-sm">
+            <div className="flex justify-between text-[#d4d8e0]">
+              <span>Active today</span>
+              <span className="text-white">{data.activeToday}</span>
             </div>
-
-
-            {/* Problem Difficulty */}
-
-            <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-lg p-5">
-
-              <h2 className="text-lg font-semibold mb-4">
-                Problem Difficulty
-              </h2>
-
-              <ResponsiveContainer width="100%" height={250}>
-
-                <BarChart data={difficultyData}>
-
-                  <CartesianGrid
-                    stroke="var(--color-border)"
-                    strokeDasharray="3 3"
-                  />
-
-                  <XAxis
-                    dataKey="name"
-                    stroke="var(--color-text-secondary)"
-                    fontSize={12}
-                  />
-
-                  <YAxis
-                    stroke="var(--color-text-secondary)"
-                    fontSize={12}
-                    allowDecimals={false}
-                  />
-
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor:
-                        "var(--color-bg-tertiary)",
-                      border: "none",
-                    }}
-                  />
-
-                  <Bar
-                    dataKey="count"
-                    fill="var(--color-forge-500)"
-                    radius={[4, 4, 0, 0]}
-                  />
-
-                </BarChart>
-
-              </ResponsiveContainer>
-
+            <div className="flex justify-between text-[#d4d8e0]">
+              <span>Solved today</span>
+              <span className="text-white">{data.solvedToday}</span>
             </div>
-
+            <div className="flex justify-between text-[#d4d8e0]">
+              <span>Submissions</span>
+              <span className="text-white">{data.submissionsToday}</span>
+            </div>
           </div>
+        </Panel>
 
-
-          {/* Student Activity */}
-
-          <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-lg p-5">
-
-            <h2 className="text-lg font-semibold mb-4">
-              Student Activity
-            </h2>
-
-            <div className="overflow-x-auto">
-
-              <table className="w-full text-sm">
-
-                <thead>
-
-                  <tr className="text-left text-[var(--color-text-secondary)] border-b border-[var(--color-border)]">
-
-                    <th className="pb-2">
-                      Student
-                    </th>
-
-                    <th className="pb-2">
-                      Solved
-                    </th>
-
-                    <th className="pb-2">
-                      Submissions
-                    </th>
-
-                    <th className="pb-2">
-                      Last Active
-                    </th>
-
-                  </tr>
-
-                </thead>
-
-                <tbody>
-
-                  {analyticsData.studentActivity.map((s) => (
-
-                    <tr
-                      key={s.username}
-                      className="border-b border-[var(--color-border)]"
-                    >
-
-                      <td className="py-2">
-                        {s.username}
-                      </td>
-
-                      <td className="py-2">
-                        {s.problemsSolved}
-                      </td>
-
-                      <td className="py-2">
-                        {s.totalSubmissions}
-                      </td>
-
-                      <td className="py-2 text-[var(--color-text-secondary)]">
-
-                        {s.lastActive === "Never"
-                          ? "Never"
-                          : new Date(
-                              s.lastActive
-                            ).toLocaleDateString()}
-
-                      </td>
-
-                    </tr>
-
-                  ))}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
+        <Panel title="Quick Actions">
+          <div className="flex flex-col gap-2 text-sm">
+            <Link to="/trainer/problems/new" className="text-[#7ee6d8] hover:underline">
+              + Create Problem
+            </Link>
+            <Link to="/trainer/problems" className="text-[#d4d8e0] hover:text-white">
+              Manage Problems
+            </Link>
+            <Link to="/trainer/students" className="text-[#d4d8e0] hover:text-white">
+              View Students
+            </Link>
           </div>
-        </>
-      )}
+        </Panel>
+      </div>
 
+      {/* Recent Submissions */}
+      <Panel title="Recent Submissions" className="mb-6">
+        <div className="text-sm">
+          <div className="grid grid-cols-4 text-[#7ee6d8] pb-2 border-b border-[#2a2f3a] mb-2">
+            <span>Student</span>
+            <span>Problem</span>
+            <span>Status</span>
+            <span>Time</span>
+          </div>
+          {recent.length === 0 ? (
+            <p className="text-[#d4d8e0] py-2">No submissions yet.</p>
+          ) : (
+            recent.map((r, i) => (
+              <div key={i} className="grid grid-cols-4 py-1.5 text-[#d4d8e0]">
+                <span className="text-white">{r.studentUsername}</span>
+                <span className="truncate pr-2">{r.problemTitle}</span>
+                <span className={r.status === "PASSED" ? "text-[#4ade80]" : "text-[#f87171]"}>
+                  {r.status === "PASSED" ? "✓ Passed" : "✗ Failed"}
+                </span>
+                <span>{timeAgo(r.submittedAt)}</span>
+              </div>
+            ))
+          )}
+        </div>
+      </Panel>
+
+      {/* Problem Performance */}
+      <Panel title="Problem Performance">
+        <div className="flex flex-col gap-1.5 text-sm">
+          {performance.length === 0 ? (
+            <p className="text-[#d4d8e0]">No submission data yet.</p>
+          ) : (
+            performance.map((p, i) => (
+              <div key={i} className="flex justify-between text-[#d4d8e0]">
+                <span className="text-white">{p.problemTitle}</span>
+                <span>{p.successRate}% success</span>
+              </div>
+            ))
+          )}
+        </div>
+      </Panel>
     </div>
   )
+}
+
+function timeAgo(isoString) {
+  const seconds = Math.floor((new Date() - new Date(isoString)) / 1000)
+  if (seconds < 60) return `${seconds}s ago`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
 }
 
 export default TrainerDashboard
