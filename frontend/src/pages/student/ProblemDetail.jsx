@@ -5,6 +5,16 @@ import { getProblemDetail, getHint, runCode, submitCode, getMyLastCode } from ".
 import DifficultyBadge from "../../components/common/DifficultyBadge"
 import ProtectedContent from "../../components/common/ProtectedContent"
 import { loader } from "@monaco-editor/react"
+import confetti from "canvas-confetti"
+
+function fireConfetti() {
+  confetti({
+    particleCount: 120,
+    spread: 80,
+    origin: { y: 0.6 },
+    colors: ["#f97316", "#ea580c", "#4ade80", "#ffffff"],
+  })
+}
 
 function ProblemDetail() {
   const { id } = useParams()
@@ -60,17 +70,20 @@ function ProblemDetail() {
   }
 
   const handleSubmit = async () => {
-    setSubmitting(true)
-    setResult(null)
-    try {
-      const res = await submitCode(id, code)
-      setResult(res.data)
-    } catch (err) {
-      setResult({ status: "ERROR", compileError: err.response?.data?.message || "Failed to submit code" })
-    } finally {
-      setSubmitting(false)
+  setSubmitting(true)
+  setResult(null)
+  try {
+    const res = await submitCode(id, code)
+    setResult(res.data)
+    if (res.data.status === "PASSED") {
+      fireConfetti()
     }
+  } catch (err) {
+    setResult({ status: "ERROR", compileError: err.response?.data?.message || "Failed to submit code" })
+  } finally {
+    setSubmitting(false)
   }
+}
 
   const handleReset = () => {
   if (!window.confirm("Reset to starter code? Your current changes will be lost.")) return

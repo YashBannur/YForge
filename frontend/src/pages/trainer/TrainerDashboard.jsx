@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { getTrainerDashboard, getRecentSubmissions, getProblemPerformance } from "../../api/trainerApi"
+import { getTrainerProblems } from "../../api/problemApi"
+import { setTodaysChallenge } from "../../api/dailyChallengeApi"
 
 function Panel({ title, children, className = "" }) {
   return (
@@ -17,6 +19,76 @@ function StatBox({ label, value }) {
       <p className="text-[#7ee6d8] text-xs mb-1">{label}</p>
       <p className="text-white text-2xl">{value}</p>
     </div>
+  )
+}
+
+function SetDailyChallengeCard() {
+  const [problems, setProblems] = useState([])
+  const [selectedId, setSelectedId] = useState("")
+  const [rewardPoints, setRewardPoints] = useState(10)
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState("")
+
+  useEffect(() => {
+    getTrainerProblems()
+      .then((res) => setProblems(res.data))
+      .catch(() => setProblems([]))
+  }, [])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!selectedId) return
+    setSaving(true)
+    setMessage("")
+    try {
+      await setTodaysChallenge({ problemId: Number(selectedId), rewardPoints: Number(rewardPoints) })
+      setMessage("Today's challenge updated.")
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Failed to set challenge")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Panel title="Set Daily Challenge" className="mb-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-sm">
+        {message && <p className="text-[#7ee6d8]">{message}</p>}
+
+        <select
+          value={selectedId}
+          onChange={(e) => setSelectedId(e.target.value)}
+          className="bg-black border border-[#2a2f3a] rounded px-3 py-2 text-[#d4d8e0]"
+          required
+        >
+          <option value="">Select a problem...</option>
+          {[...problems].sort((a, b) => a.id - b.id).map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.title} ({p.difficulty})
+            </option>
+          ))}
+        </select>
+
+        <div className="flex items-center gap-3">
+          <label className="text-[#d4d8e0]">Reward points</label>
+          <input
+            type="number"
+            min={1}
+            value={rewardPoints}
+            onChange={(e) => setRewardPoints(e.target.value)}
+            className="bg-black border border-[#2a2f3a] rounded px-3 py-1.5 w-24 text-[#d4d8e0]"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={saving || !selectedId}
+          className="self-start bg-[#7ee6d8] text-black font-semibold text-sm px-4 py-2 rounded disabled:opacity-50"
+        >
+          {saving ? "Saving..." : "Set Today's Challenge"}
+        </button>
+      </form>
+    </Panel>
   )
 }
 
@@ -86,6 +158,9 @@ function TrainerDashboard() {
           </div>
         </Panel>
       </div>
+
+      {/* Set Daily Challenge */}
+      <SetDailyChallengeCard />
 
       {/* Recent Submissions */}
       <Panel title="Recent Submissions" className="mb-6">
