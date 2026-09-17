@@ -1,0 +1,101 @@
+!SESSION 2026-09-17 19:37:39.540 -----------------------------------------------
+eclipse.buildId=4.40.0.20260604-0652
+java.version=21.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_IN
+Framework arguments:  -product org.eclipse.epp.package.jee.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.jee.product
+
+!ENTRY ch.qos.logback.classic 1 0 2026-09-17 19:38:13.482
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY ch.qos.logback.classic 1 0 2026-09-17 19:38:38.337
+!MESSAGE Logback config file: C:\Users\shrisiddeshwar\Desktop\Yforg\backend\.metadata\.plugins\org.eclipse.m2e.logback\logback.2.7.101.20251017-1242.xml
+
+!ENTRY com.genuitec.copilot4eclipse.boot 1 0 2026-09-17 19:38:56.062
+!MESSAGE [C4E] booting
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2026-09-17 19:38:56.156
+!MESSAGE [Info] Starting language server with binary lsp agent.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2026-09-17 19:38:56.160
+!MESSAGE [Info] Found native binary in fragment bundle: com.microsoft.copilot.eclipse.core.agent.win32
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2026-09-17 19:38:56.290
+!MESSAGE [Info] Binary agent started successfully.
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-09-17 19:38:56.595
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\shrisiddeshwar'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY com.genuitec.copilot4eclipse.copilotapi 1 0 2026-09-17 19:38:57.809
+!MESSAGE [C4E] Language server: EMBEDDED_NODE
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:03.598
+!MESSAGE [LS:Copilot4Eclipse Language Server][Info]	[lsp] GitHub Copilot Language Server 1.348.0 initialized
+
+!ENTRY com.genuitec.copilot4eclipse.chat 1 0 2026-09-17 19:39:03.897
+!MESSAGE [C4E] EdgeDataDir: C:\Users\shrisiddeshwar\Desktop\Yforg\backend\.metadata\.plugins\com.genuitec.copilot4eclipse.chat\edgedata
+
+!ENTRY com.genuitec.copilot4eclipse.chat 1 0 2026-09-17 19:39:07.697
+!MESSAGE [C4E] Conversation persistence: C:/Users/shrisiddeshwar/Desktop/Yforg/backend/.metadata/.plugins/com.genuitec.copilot4eclipse/chatdata
+
+!ENTRY com.genuitec.copilot4eclipse.copilotapi 1 0 2026-09-17 19:39:09.551
+!MESSAGE [C4E] Copilot API proxy: native mode
+
+!ENTRY com.genuitec.copilot4eclipse.boot 1 0 2026-09-17 19:39:11.308
+!MESSAGE [C4E] API started
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:11.469
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[lsp] GitHub Copilot Language Server 1.488.0 initialized
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:11.756
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[UndiciFetcher] HTTP settings changed; resetting Undici dispatchers. {
+  proxy: 'none',
+  noProxyCount: 0,
+  proxyStrictSSL: true,
+  hasProxyAuthorization: false,
+  hasProxyKerberosServicePrincipal: false
+}
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-09-17 19:39:11.762
+!MESSAGE [LS:GitHub Copilot Language Server][Warning]	[McpAutoApproveService] Invalid McpAutoApproveService config, resetting to empty undefined
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:12.247
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[certificates] Removed 16 expired certificates
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:12.249
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[UndiciFetcher] Root certificate set changed; resetting Undici dispatchers. { certificateCount: 198 }
+
+!ENTRY com.genuitec.copilot4eclipse.chat 1 0 2026-09-17 19:39:12.307
+!MESSAGE [C4E] Internal server started: true uri: http://localhost:49680/chat
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:12.349
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[default] Policy watcher started for GitHub Copilot Plugin
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:12.360
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[GithubAvailableEmbeddingTypes] Could not find any available embedding types. Error: noSession
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:12.381
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[ripgrep] Using tmpFolder for ripgrep: C:\Users\shrisiddeshwar\.cache\pkg\72dc6f288b8f13e22da7572a55f576ac335b8402e617b8aaf91f8dbf72adf1a0
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:12.389
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[ripgrep] Resolved ripgrep path: C:\Users\shrisiddeshwar\.cache\pkg\72dc6f288b8f13e22da7572a55f576ac335b8402e617b8aaf91f8dbf72adf1a0\rg.exe
+
+!ENTRY org.eclipse.lsp4e 1 0 2026-09-17 19:39:12.391
+!MESSAGE [LS:GitHub Copilot Language Server][Info]	[ripgrep] Set GITHUB_COPILOT_RIPGREP_PATH_OVERRIDE=C:\Users\shrisiddeshwar\.cache\pkg\72dc6f288b8f13e22da7572a55f576ac335b8402e617b8aaf91f8dbf72adf1a0\rg.exe
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-09-17 19:39:12.891
+!MESSAGE [LS:GitHub Copilot Language Server][Warning]	[McpAutoApproveService] Invalid McpAutoApproveService config, resetting to empty undefined
+
+!ENTRY com.genuitec.copilot4eclipse.chat 1 0 2026-09-17 19:39:13.080
+!MESSAGE [C4E] Workspace labels: 
+
+!ENTRY com.genuitec.copilot4eclipse.chat 1 0 2026-09-17 19:40:53.061
+!MESSAGE [C4E] Internal server stopped: Server@8268dd7{STOPPED}[10.0.25,sto=0]
+
+!ENTRY com.genuitec.copilot4eclipse.chat 1 0 2026-09-17 19:40:53.082
+!MESSAGE [C4E] Internal server stopped: true

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react"
+import { clearCache } from "../utils/cache"
 
 const AuthContext = createContext(null)
 
@@ -25,11 +26,12 @@ export function AuthProvider({ children }) {
   }
 
   const logout = () => {
-    localStorage.removeItem("yforge_token")
-    localStorage.removeItem("yforge_username")
-    localStorage.removeItem("yforge_role")
-    setUser(null)
-  }
+  localStorage.removeItem("yforge_token")
+  localStorage.removeItem("yforge_username")
+  localStorage.removeItem("yforge_role")
+  clearCache()
+  setUser(null)
+}
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>

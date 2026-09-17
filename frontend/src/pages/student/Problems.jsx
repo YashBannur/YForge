@@ -3,6 +3,9 @@ import { Link } from "react-router-dom"
 import { getProblems } from "../../api/problemApi"
 import DifficultyBadge from "../../components/common/DifficultyBadge"
 
+import { cachedFetch } from "../../utils/cache"
+import { useAuth } from "../../context/AuthContext"
+
 function Problems() {
   const [problems, setProblems] = useState([])
   const [error, setError] = useState("")
@@ -12,17 +15,14 @@ function Problems() {
   const [statusFilter, setStatusFilter] = useState("ALL")
   const [topicFilter, setTopicFilter] = useState("ALL")
   const [searchQuery, setSearchQuery] = useState("")
+  const { user } = useAuth()
 
   useEffect(() => {
-    getProblems()
-      .then((res) => setProblems(res.data))
-      .catch((err) =>
-        setError(
-          err.response?.data?.message || "Failed to load problems"
-        )
-      )
-      .finally(() => setLoading(false))
-  }, [])
+  cachedFetch(`problems:${user?.username}`, () => getProblems().then((res) => res.data))
+    .then((data) => setProblems(data))
+    .catch((err) => setError(err.response?.data?.message || "Failed to load problems"))
+    .finally(() => setLoading(false))
+}, [user?.username])
 
   if (loading) {
     return (

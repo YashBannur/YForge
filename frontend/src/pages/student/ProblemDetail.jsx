@@ -5,6 +5,8 @@ import confetti from "canvas-confetti"
 import { getProblemDetail, getHint, runCode, submitCode, getMyLastCode } from "../../api/problemApi"
 import DifficultyBadge from "../../components/common/DifficultyBadge"
 import ProtectedContent from "../../components/common/ProtectedContent"
+import { invalidate } from "../../utils/cache"
+import { useAuth } from "../../context/AuthContext"
 
 function fireConfetti() {
   confetti({
@@ -17,6 +19,7 @@ function fireConfetti() {
 
 function ProblemDetail() {
   const { id } = useParams()
+  const { user } = useAuth()
   const [problem, setProblem] = useState(null)
   const [code, setCode] = useState("")
   const [error, setError] = useState("")
@@ -81,6 +84,7 @@ function ProblemDetail() {
       setResult(res.data)
       if (res.data.status === "PASSED") {
         fireConfetti()
+        invalidate(`problems:${user?.username}`)
       }
     } catch (err) {
       setResult({ status: "ERROR", compileError: err.response?.data?.message || "Failed to submit code" })
@@ -307,7 +311,7 @@ function ProblemDetail() {
                   {result.testResults?.map((tr) => (
                     <div key={tr.testNumber} className="mb-2 text-xs sm:text-sm p-2 rounded bg-[var(--color-bg-tertiary)]">
                       <span className={tr.passed ? "text-[var(--color-success)]" : "text-[var(--color-danger)]"}>
-                        {tr.passed ? "✓" : "✗"} Test {tr.testNumber} {tr.hidden ? "(hidden)" : ""}
+                        {tr.passed ? "✓" : "✗"} Test {tr.testNumber} {tr.hidden ? "🔒" : ""}
                       </span>
                       {!tr.hidden && !tr.passed && (
                         <div className="mt-1 text-xs text-[var(--color-text-secondary)]">
